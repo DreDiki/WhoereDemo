@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'maven'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -7,6 +8,18 @@ dependencies {
         exclude group: 'org.json', module: 'json'
     }
     compile 'com.google.code.gson:gson:2.8.0'
+}
+uploadArchives {
+    repositories.mavenDeployer {
+        repository(url: "C:\\Users\\DreDiki\\Documents\\AndroidStudioProjects\\WWClientDemo\\WWClientDoc")
+        pom.groupId = "com.drediki"
+        pom.artifactId = "wwclient"
+        pom.version = 1.0      }
+}
+
+task generateSources(type: Jar) {
+    baseName = 'sources'
+    from sourceSets.main.java.srcDirs
 }
 
 sourceCompatibility = "1.7"

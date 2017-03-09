@@ -16,7 +16,9 @@ import com.drediki.wwclient.User;
 
 import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity implements Client.FeedbackListener{
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity implements Client.FeedbackListener,Client.ReceiveListener{
 
     private TextView mTextMessage;
     private EditText editText;
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements Client.FeedbackLi
         setContentView(R.layout.activity_main);
         handler = new Handler();
         client.setFeedbackListener(this);
+        client.setReceiveListener(this);
         mTextMessage = (TextView) findViewById(R.id.message);
         editText = (EditText) findViewById(R.id.editText);
         editText2 = (EditText) findViewById(R.id.editText2);
@@ -68,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements Client.FeedbackLi
     public void onClick(View view){
         switch (view.getId()){
             case R.id.button1:
+//                User user = new User(editText3.getText().toString());
                 User user = new User(editText3.getText().toString());
                 user.setPassword(editText4.getText().toString());
                 user.setGuest(true);
@@ -102,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements Client.FeedbackLi
         }
     }
 
+
     @Override
     public void onSuccess(final Client.ACTION action,final int resultCode) {
         handler.post(new Runnable() {
@@ -120,5 +125,44 @@ public class MainActivity extends AppCompatActivity implements Client.FeedbackLi
                 mTextMessage.setText(mTextMessage.getText()+"\n"+action + "Failed,code:" + resultCode);
             }
         });
+    }
+
+    @Override
+    public void broadcast(final User user, final String s,final String s1) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                mTextMessage.setText(mTextMessage.getText()+"\n"+user.getName() + " Send message in"+s+": " + s1);
+            }
+        });
+    }
+
+    @Override
+    public void chat(final User user, final String s) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                mTextMessage.setText(mTextMessage.getText()+"\n"+user.getName() + " Send message privately:" + s);
+            }
+        });
+    }
+
+    @Override
+    public void nearby(final User user,final int i) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                mTextMessage.setText(mTextMessage.getText()+"\n"+user.getName() + " actioned:" + i);
+            }
+        });
+    }
+
+    @Override
+    public void users(ArrayList<User> arrayList, String s) {
+        if(arrayList==null||arrayList.isEmpty())return;
+        for(User user:arrayList){
+            if(user==null)continue;
+            System.out.println("Get Information Of:" + user.getName());
+        }
     }
 }
